@@ -3,17 +3,42 @@ import {unixTimeToString} from '../util.js';
 import {Link} from 'react-router';
 
 export default class Comment extends React.Component {
+    didUserLike() {
+      var likeCounter = this.props.likeCounter;
+      var liked = false;
+
+      for (var i = 0; i < likeCounter.length; i++) {
+        if (likeCounter[i]._id === 4) {
+          liked = true;
+          break;
+        }
+      }
+      return liked;
+    }
+
+    handleLikeClick(clickEvent) {
+       clickEvent.preventDefault();
+
+       if (clickEvent.button === 0) {
+         this.props.onLikeClick(this.didUserLike());
+       }
+     }
   render() {
+      var likeButtonText = "Like";
+       if (this.didUserLike()) {
+         likeButtonText = "Unlike";
+       }
     return (
       <div>
         <div className="media-left media-top">
           PIC
         </div>
         <div className="media-body">
-         <Link to={"/profile/" + this.props.author._id}>{this.props.author.fullName}</Link> {this.props.children}
-          <br /><a href="#">Like</a> · <a href="#">Reply</a> ·
-            {unixTimeToString(this.props.postDate)}
-        </div>
+            <Link to={"/profile/" + this.props.author._id}>{this.props.author.fullName}</Link>{' ' + this.props.children}
+            <br /><a href="#" onClick={(e) => this.handleLikeClick(e)}>{likeButtonText}</a> · <a href="#">Reply</a> ·
+              {' ' + unixTimeToString(this.props.postDate)} ·
+              <a href="#">{' ' + this.props.likeCounter.length} people</a> like this
+          </div>
       </div>
     )
   }

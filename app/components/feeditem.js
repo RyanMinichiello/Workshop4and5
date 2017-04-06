@@ -5,8 +5,8 @@ import Comment from './comment';
 import {postComment} from '../server.js'
 import {unlikeFeedItem} from '../server.js'
 import {likeFeedItem} from '../server.js'
-
-
+import {likeComment} from '../server.js';
+import {unlikeComment} from '../server.js';
 
 export default class FeedItem extends React.Component {
   constructor(props) {
@@ -50,6 +50,23 @@ export default class FeedItem extends React.Component {
       }
     }
   }
+
+  handleCommentLikeClick(didUserLike, commentIndex) {
+
+       var callbackFunction = (updatedLikeCounter) => {
+
+         var newComments = this.state.comments;
+         newComments[commentIndex].likeCounter = updatedLikeCounter;
+         this.setState({comments: newComments});
+       };
+
+       if (didUserLike) {
+         unlikeComment(this.state._id, commentIndex, 4, callbackFunction);
+       } else {
+
+         likeComment(this.state._id, commentIndex, 4, callbackFunction);
+       }
+   }
 
   /**
   * Returns 'true' if the user liked the item.
@@ -132,7 +149,7 @@ export default class FeedItem extends React.Component {
                   data.comments.map((comment, i) => {
                     // i is comment's index in comments array
                     return (
-                      <Comment key={i} author={comment.author} postDate={comment.postDate}>{comment.contents}</Comment>
+                        <Comment key={i} author={comment.author} postDate={comment.postDate} likeCounter={comment.likeCounter} onLikeClick={(didUserLike) => this.handleCommentLikeClick(didUserLike, i)}>{comment.contents}</Comment>
                     );
                   })
                 }
